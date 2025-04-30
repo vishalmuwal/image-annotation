@@ -1,12 +1,77 @@
-# Image Annotation
+# Image Annotation Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based image annotation tool that allows users to add, manage, and organize comments on images, similar to Figma's commenting system.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Image Management
 
-## Expanding the ESLint configuration
+- Upload multiple images (JPEG, PNG)
+- Responsive image display
+- Gallery view for easy image switching
+- Drag and drop support for image uploads
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Annotation System
+
+- Click anywhere on images to add comments
+- Numbered markers show comment locations
+- Comments appear in exact clicked positions
+- Smart positioning of comment popups to prevent overflow
+
+### Comment System
+
+- Threaded comments with nested replies
+- Edit and delete functionality for comments
+- Real-time comment updates
+- Comment count badges in gallery view
+
+### User Interface
+
+- Clean, modern Material-UI design
+- Sidebar with comment list and quick navigation
+- Smooth animations and transitions
+- Responsive layout that works on different screen sizes
+
+### Performance Features
+
+- Redux for efficient state management
+- Local storage persistence
+- Debounced input fields for better performance
+- Optimized rendering for multiple comments
+
+## Technical Implementation
+
+- **Frontend**: React.js with Material-UI
+- **State Management**: Redux with Redux Toolkit
+- **Storage**: LocalStorage for data persistence
+- **Performance**: Input debouncing, optimized renders
+
+## Key Components
+
+- `ImageViewer`: Main image display with annotation functionality
+- `ImageGallery`: Thumbnail view of uploaded images
+- `CommentDialog`: Threaded comment interface
+- `CommentPanel`: Sidebar listing all comments
+
+## State Management
+
+- Normalized comment storage
+- Efficient marker tracking
+- Optimized image state management
+- Persistent storage handling
+
+## Usage
+
+1. Upload images using the upload button or drag and drop
+2. Click the "Add Comment" button to enter annotation mode
+3. Click anywhere on the image to add a comment
+4. View and manage comments in the sidebar
+5. Click on markers to view and reply to comments
+
+## GitHub Repository
+
+- https://github.com/vishalmuwal/image-annotation
+
+## Vercel Deployment Link
+
+-

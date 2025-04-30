@@ -1,23 +1,24 @@
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem('imageAnnotationState')
+    const serializedState = localStorage.getItem("imageAnnotationState");
     if (serializedState === null) {
-      return undefined
+      return undefined;
     }
-    return JSON.parse(serializedState)
+    return JSON.parse(serializedState);
   } catch (err) {
-    return undefined
+    console.log(err);
+    return undefined;
   }
-}
+};
 
 export const saveState = (state) => {
   try {
     const serializedState = JSON.stringify({
       images: state.images,
-      comments: state.comments
-    })
-    localStorage.setItem('imageAnnotationState', serializedState)
+      comments: state.comments,
+    });
+    localStorage.setItem("imageAnnotationState", serializedState);
   } catch (err) {
-    // Ignore write errors
+    console.log(err);
   }
-}
+};

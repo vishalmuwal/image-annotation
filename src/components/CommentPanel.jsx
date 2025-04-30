@@ -6,6 +6,7 @@ import { CommentDialog } from "./CommentDialog";
 export function CommentPanel() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
+  const [dialogPosition, setDialogPosition] = useState(null);
   const selectedImage = useSelector((state) => state.images.selectedImage);
   const markers = useSelector((state) => state.comments.markers);
   const comments = useSelector((state) => {
@@ -17,13 +18,36 @@ export function CommentPanel() {
 
   const getMarkerNumber = (commentId) => {
     const index = markers
-      .filter(marker => marker.imageId === selectedImage?.id)
-      .findIndex(marker => marker.id === commentId);
+      .filter((marker) => marker.imageId === selectedImage?.id)
+      .findIndex((marker) => marker.id === commentId);
     return index + 1;
   };
 
+  const getMarkerPosition = (commentId) => {
+    const marker = markers.find((marker) => marker.id === commentId);
+    return marker ? { x: marker.x, y: marker.y } : { x: 50, y: 50 };
+  };
+
+  const handleCommentClick = (comment) => {
+    const position = getMarkerPosition(comment.id);
+    setDialogPosition(position);
+    setSelectedComment(comment);
+    setDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setDialogOpen(false);
+    // Delay clearing the position and comment until after the dialog animation
+    setTimeout(() => {
+      setDialogPosition(null);
+      setSelectedComment(null);
+    }, 300); // Typical Material-UI dialog transition duration
+  };
+
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", p: 2 }}>
+    <Box
+      sx={{ height: "100%", display: "flex", flexDirection: "column", p: 2 }}
+    >
       <Typography variant="h6" gutterBottom>
         Comments
       </Typography>
@@ -33,12 +57,9 @@ export function CommentPanel() {
           <Paper
             key={comment.id}
             sx={{ p: 2, cursor: "pointer" }}
-            onClick={() => {
-              setSelectedComment(comment);
-              setDialogOpen(true);
-            }}
+            onClick={() => handleCommentClick(comment)}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <Box
                 sx={{
                   width: 24,
@@ -71,11 +92,8 @@ export function CommentPanel() {
       <CommentDialog
         open={dialogOpen}
         comment={selectedComment || {}}
-        onClose={() => {
-          setDialogOpen(false);
-          setSelectedComment(null);
-        }}
-        position={null}
+        onClose={handleClose}
+        position={dialogPosition}
       />
     </Box>
   );

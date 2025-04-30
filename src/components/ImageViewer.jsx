@@ -12,7 +12,7 @@ import { CloudUpload, Delete as DeleteIcon } from "@mui/icons-material";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { addImage, selectImage, removeImage } from "../store/slices/imageSlice";
-import { addComment } from "../store/slices/commentSlice";
+import { addComment, deleteImageComments } from "../store/slices/commentSlice";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { CommentDialog } from "./CommentDialog";
 
@@ -82,6 +82,7 @@ export function ImageViewer() {
 
   const handleDelete = () => {
     if (!selectedImage) return;
+    dispatch(deleteImageComments(selectedImage.id));
     dispatch(removeImage(selectedImage.id));
     const nextImage = images.find((img) => img.id !== selectedImage.id);
     if (nextImage) {
@@ -116,8 +117,19 @@ export function ImageViewer() {
     }
   };
 
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    // Delay clearing the marker and position until after the dialog animation
+    setTimeout(() => {
+      setActiveMarker(null);
+      setClickPosition(null);
+    }, 300);
+  };
+
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
+    <Box
+      sx={{ height: "100%", display: "flex", flexDirection: "column", p: 2 }}
+    >
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <Button
           component="label"
@@ -151,13 +163,13 @@ export function ImageViewer() {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           sx={{
-            position: 'relative',
+            position: "relative",
             flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: isAddingComment ? 'crosshair' : 'default',
-            overflow: 'hidden'
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: isAddingComment ? "crosshair" : "default",
+            overflow: "hidden",
           }}
         >
           <Box
@@ -165,9 +177,9 @@ export function ImageViewer() {
             src={selectedImage.url}
             alt={selectedImage.name}
             sx={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
             }}
           />
           {markers
@@ -201,19 +213,19 @@ export function ImageViewer() {
 
           <IconButton
             sx={{
-              position: 'absolute',
+              position: "absolute",
               bottom: 16,
               right: 16,
-              bgcolor: 'background.paper',
+              bgcolor: "background.paper",
               boxShadow: 2,
-              '&:hover': {
-                color: 'error.main',
-                bgcolor: 'error.light'
-              }
+              "&:hover": {
+                color: "error.main",
+                bgcolor: "error.light",
+              },
             }}
             onClick={(e) => {
-              e.stopPropagation()
-              setDeleteDialogOpen(true)
+              e.stopPropagation();
+              setDeleteDialogOpen(true);
             }}
           >
             <DeleteIcon />
@@ -221,16 +233,9 @@ export function ImageViewer() {
 
           <CommentDialog
             open={dialogOpen}
-            comment={activeComment || { id: activeMarker?.id }}
-            position={{
-              x: Math.min(Math.max(clickPosition?.x || 50, 20), 80),
-              y: Math.min(Math.max(clickPosition?.y || 50, 20), 80)
-            }}
-            onClose={() => {
-              setDialogOpen(false)
-              setActiveMarker(null)
-              setClickPosition(null)
-            }}
+            comment={activeComment || {}}
+            onClose={handleDialogClose}
+            position={clickPosition}
           />
         </Paper>
       ) : (
@@ -260,5 +265,5 @@ export function ImageViewer() {
         onClose={() => setDeleteDialogOpen(false)}
       />
     </Box>
-  )
+  );
 }

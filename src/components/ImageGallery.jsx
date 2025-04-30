@@ -10,6 +10,7 @@ import {
   Badge,
 } from "@mui/material";
 import { selectImage, removeImage } from "../store/slices/imageSlice";
+import { deleteImageComments } from "../store/slices/commentSlice";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 
@@ -32,8 +33,10 @@ export function ImageGallery() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState(null);
 
+  // In handleDelete function
   const handleDelete = () => {
     if (!imageToDelete) return;
+    dispatch(deleteImageComments(imageToDelete.id)); // Add this line
     dispatch(removeImage(imageToDelete.id));
     if (selectedImage?.id === imageToDelete.id) {
       const nextImage = images.find((img) => img.id !== imageToDelete.id);
