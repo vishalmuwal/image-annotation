@@ -90,6 +90,32 @@ export function ImageViewer() {
     setDeleteDialogOpen(false);
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newImage = {
+          id: Date.now().toString(),
+          name: file.name,
+          url: e.target.result,
+          timestamp: new Date().toISOString(),
+        };
+        dispatch(addImage(newImage));
+        dispatch(selectImage(newImage));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
@@ -122,6 +148,8 @@ export function ImageViewer() {
         <Paper
           elevation={2}
           onClick={handleImageClick}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           sx={{
             position: 'relative',
             flex: 1,
@@ -137,9 +165,9 @@ export function ImageViewer() {
             src={selectedImage.url}
             alt={selectedImage.name}
             sx={{
-              maxWidth: '100%',
-              maxHeight: '100%',
-              objectFit: 'contain'
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
             }}
           />
           {markers
@@ -194,7 +222,10 @@ export function ImageViewer() {
           <CommentDialog
             open={dialogOpen}
             comment={activeComment || { id: activeMarker?.id }}
-            position={clickPosition}
+            position={{
+              x: Math.min(Math.max(clickPosition?.x || 50, 20), 80),
+              y: Math.min(Math.max(clickPosition?.y || 50, 20), 80)
+            }}
             onClose={() => {
               setDialogOpen(false)
               setActiveMarker(null)
@@ -204,16 +235,20 @@ export function ImageViewer() {
         </Paper>
       ) : (
         <Paper
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           sx={{
             flex: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             bgcolor: "grey.100",
+            border: "2px dashed",
+            borderColor: "grey.300",
           }}
         >
           <Typography color="text.secondary">
-            Select an image from the gallery or upload a new one
+            Drop an image here or select from gallery
           </Typography>
         </Paper>
       )}

@@ -18,7 +18,7 @@ import {
   Reply as ReplyIcon,
   Close as CloseIcon
 } from '@mui/icons-material'
-import { addReply, updateComment, deleteComment } from '../store/slices/commentSlice'
+import { addReply, updateComment, deleteComment, deleteReply } from '../store/slices/commentSlice'
 
 export function CommentDialog({ open, comment, onClose, position }) {
   const dispatch = useDispatch()
@@ -28,14 +28,25 @@ export function CommentDialog({ open, comment, onClose, position }) {
   const [editText, setEditText] = useState('')
 
   const handleAddComment = () => {
-    if (newComment.trim()) {
-      dispatch(updateComment({
-        id: comment.id,
-        content: newComment
-      }))
-      setNewComment('')
+    if (!newComment.trim()) {
+      dispatch(deleteComment(comment.id))
       onClose()
+      return
     }
+
+    dispatch(updateComment({
+      id: comment.id,
+      content: newComment
+    }))
+    setNewComment('')
+    onClose()
+  }
+
+  const handleClose = () => {
+    if (!comment.content) {
+      dispatch(deleteComment(comment.id))
+    }
+    onClose()
   }
 
   const handleAddReply = () => {
@@ -53,31 +64,22 @@ export function CommentDialog({ open, comment, onClose, position }) {
     }
   }
 
-  const handleEditComment = (id, initialContent) => {
-    setEditingComment(id)
-    setEditText(initialContent)
-  }
-
-  const handleSaveEdit = () => {
-    if (editText.trim()) {
-      dispatch(updateComment({
-        id: editingComment,
-        content: editText
+  const handleDelete = (id, isReply = false) => {
+    if (isReply) {
+      dispatch(deleteReply({
+        commentId: comment.id,
+        replyId: id
       }))
-      setEditingComment(null)
-      setEditText('')
+    } else {
+      dispatch(deleteComment(id))
+      onClose()
     }
-  }
-
-  const handleDelete = (id) => {
-    dispatch(deleteComment(id))
-    onClose()
   }
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       PaperProps={{
         sx: {
           position: 'fixed',
@@ -91,7 +93,7 @@ export function CommentDialog({ open, comment, onClose, position }) {
       <DialogTitle>
         Comment Thread
         <IconButton
-          onClick={onClose}
+          onClick={handleClose}
           sx={{ position: 'absolute', right: 8, top: 8 }}
         >
           <CloseIcon />
@@ -159,7 +161,7 @@ export function CommentDialog({ open, comment, onClose, position }) {
                     <IconButton size="small" onClick={() => handleEditComment(reply.id, reply.content)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(reply.id)}>
+                    <IconButton size="small" onClick={() => handleDelete(reply.id, true)}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>

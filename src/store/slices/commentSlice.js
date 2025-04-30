@@ -47,9 +47,17 @@ export const commentSlice = createSlice({
     },
     setActiveComment: (state, action) => {
       state.activeComment = action.payload
+    },
+    deleteReply: (state, action) => {
+      const { commentId, replyId } = action.payload
+      if (state.byId[commentId]) {
+        state.byId[commentId].replies = state.byId[commentId].replies.filter(
+          reply => reply.id !== replyId
+        )
+      }
     }
   }
 })
 
-export const { addComment, addReply, updateComment, deleteComment, setActiveComment } = commentSlice.actions
+export const { addComment, addReply, updateComment, deleteComment, setActiveComment, deleteReply } = commentSlice.actions
 export default commentSlice.reducer
